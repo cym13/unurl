@@ -38,19 +38,19 @@ def main():
 
     if '://' not in url:
         print(url)
+        return
 
-    else:
-        import requests
-        r = requests.get(url)
-        with open(path, "wb") as f:
-            f.write(r.content)
+    import requests
+    r = requests.get(url)
+    with open(path, "wb") as f:
+        f.write(r.content)
 
-        ext = file_extension(url)
-        if ext:
-            symlink(path, path + ext)
-            path = path + ext
+    ext = file_extension(url)
+    if ext:
+        symlink(path, path + ext)
+        path = path + ext
 
-        print(path)
+    print(path)
 
 if __name__ == "__main__":
     main()
