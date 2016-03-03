@@ -11,6 +11,20 @@ It returns a path to the file to stdout. This path is extension-less if no
 extension could be found from the url, otherwise it tries to be smart and
 puts it on the temp name to avoid breaking fragile programs.
 
+Documentation
+=============
+
+::
+
+    Usage: unurl [-h] [-n name] [URL]
+
+    Argument:
+        URL     URL to download
+
+    Options:
+        -h, --help          Print this help and exit.
+        -n, --name name     Use `name' as the temporary file name.
+
 Examples
 ========
 
@@ -40,7 +54,6 @@ Examples
     $ sxiv `unurl 'http://i.imgur.com/KGDYTq9.gif'`
     < Opens the gif with sxiv image viewer >
 
-
 Warning
 =======
 
@@ -51,19 +64,11 @@ using the file (temp-file attack).
 (Granted, no attacker should be running wild on your system anyway but let's
 not make their task easier...)
 
-Documentation
-=============
+Dependancies
+============
 
-::
-
-    Usage: unurl [-h] [-n name] [URL]
-
-    Argument:
-        URL     URL to download
-
-    Options:
-        -h, --help          Print this help and exit.
-        -n, --name name     Use `name' as the temporary file name.
+- Python3
+- Docopt (sudo pip3 install docopt)
 
 License
 =======
