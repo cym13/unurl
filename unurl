@@ -15,7 +15,7 @@ Options:
 """
 
 import re
-from os     import symlink
+from os     import symlink, remove
 from docopt import docopt
 
 
@@ -47,6 +47,7 @@ def main():
 
     ext = file_extension(url)
     if ext:
+        remove(path + ext)
         symlink(path, path + ext)
         path = path + ext
 
