@@ -47,7 +47,10 @@ def main():
 
     ext = file_extension(url)
     if ext:
-        remove(path + ext)
+        try:
+            remove(path + ext)
+        except FileNotFoundError:
+            pass
         symlink(path, path + ext)
         path = path + ext
 
