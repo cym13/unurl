@@ -15,7 +15,8 @@ Options:
 """
 
 import re
-from os     import symlink, remove
+import os
+import sys
 from docopt import docopt
 
 
@@ -26,14 +27,33 @@ def file_extension(url, *, extreg=re.compile("[^/]/[^/?]+(\.[^/?.]+)(\?|$)")):
     return result[0][0]
 
 
+def create_secure_directory(dirname):
+    try:
+        previous_umask = os.umask(0o077)
+        os.mkdir(dirname)
+        os.umask(previous_umask)
+    except FileExistsError:
+        pass
+
+    os.chdir(dirname)
+
+    dir_stat = os.stat(".")
+
+    if (dir_stat.st_uid != os.getuid() or dir_stat.st_mode & 0o777 != 0o700):
+        print("Wrong directory permissions", file=sys.stderr)
+        exit(1)
+
+
 def main():
-    args = docopt(__doc__)
-    url  = args["URL"]
-    name = args["--name"] or "tmp_unurl"
-    path = "/tmp/" + name
+    args    = docopt(__doc__)
+    url     = args["URL"]
+    name    = args["--name"] or "tmp_unurl"
+    tmp_dir = "/tmp/unurl-%s" % os.getuid()
+
+    create_secure_directory(tmp_dir)
 
     if not url:
-        print(path)
+        print(tmp_dir + "/" + name)
         return
 
     if '://' not in url:
@@ -42,19 +62,19 @@ def main():
 
     import requests
     r = requests.get(url)
-    with open(path, "wb") as f:
+    with open(name, "wb") as f:
         f.write(r.content)
 
     ext = file_extension(url)
     if ext:
         try:
-            remove(path + ext)
+            os.remove(name + ext)
         except FileNotFoundError:
             pass
-        symlink(path, path + ext)
-        path = path + ext
+        os.symlink(name, name + ext)
+        name = name + ext
 
-    print(path)
+    print(tmp_dir + "/" + name)
 
 if __name__ == "__main__":
     main()
